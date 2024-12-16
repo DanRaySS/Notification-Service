@@ -4,6 +4,7 @@ namespace Notification_Service.Core.Domain.SharedKernel.Storage
 {
     public interface IReadOnlyRepository<TAggregateRoot> where TAggregateRoot : IAggregateRoot
     {
+        bool ReadOnly { get; set; }
         Task<TAggregateRoot> FindAsync(object[] keyValues, CancellationToken cancellationToken);
 
         Task<IReadOnlyList<TAggregateRoot>> ListAsync(Expression<Func<TAggregateRoot, bool>> predicate);
