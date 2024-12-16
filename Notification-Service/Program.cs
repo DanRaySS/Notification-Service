@@ -9,7 +9,7 @@ namespace Notification_Service
 
             app.MapGet("/", () => "Hello World!");
 
-            //app.UseSwagger();
+            app.UseSwagger();
 
             app.Run();
         }
