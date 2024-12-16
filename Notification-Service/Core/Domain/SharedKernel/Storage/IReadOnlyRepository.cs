@@ -7,7 +7,7 @@ namespace Notification_Service.Core.Domain.SharedKernel.Storage
         bool ReadOnly { get; set; }
         ValueTask<TAggregateRoot?> FindAsync(object[] keyValues, CancellationToken cancellationToken);
 
-        Task<IReadOnlyList<TAggregateRoot>> ListAsync(Expression<Func<TAggregateRoot, bool>> predicate);
+        Task<IReadOnlyList<TAggregateRoot>> ListAsync(Expression<Func<TAggregateRoot, bool>> predicate, CancellationToken cancellationToken);
         Task<IReadOnlyList<TAggregateRoot>> ListAsync(CancellationToken cancellationToken);
 
         Task<TAggregateRoot> SingleAsync(CancellationToken cancellationToken);
