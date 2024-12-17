@@ -26,9 +26,6 @@ namespace Notification_Service.Core.Domain.SharedKernel.Storage
         public abstract Task<long> LongCountAsync(CancellationToken cancellationToken);
 
         public abstract Task<long> LongCountAsync(Expression<Func<TAggregateRoot, bool>> predicate, CancellationToken cancellationToken);
-
-        public abstract Task<IReadOnlyList<TResult>> QueryAsync<TResult>(Expression<Func<IQueryable<TAggregateRoot>, IQueryable<TResult>>> predicate, CancellationToken cancellationToken);
-        public abstract Task<IReadOnlyList<TResult>> QueryAsync<TResult>(Func<IQueryable<TAggregateRoot>, IQueryable<TResult>> predicate, CancellationToken cancellationToken);
         public abstract Task<TAggregateRoot> SingleAsync(CancellationToken cancellationToken);
 
         public abstract Task<TAggregateRoot> SingleAsync(Expression<Func<TAggregateRoot, bool>> predicate, CancellationToken cancellationToken);
@@ -36,6 +33,6 @@ namespace Notification_Service.Core.Domain.SharedKernel.Storage
         public abstract Task<TAggregateRoot?> SingleOrDefaultAsync(CancellationToken cancellationToken);
 
         public abstract Task<TAggregateRoot?> SingleOrDefaultAsync(Expression<Func<TAggregateRoot, bool>> predicate, CancellationToken cancellationToken);
-
+        public abstract Task<IReadOnlyList<TResult>> QueryAsync<TResult>(Func<IQueryable<TAggregateRoot>, IQueryable<TResult>> predicate, CancellationToken cancellationToken);
     }
 }

@@ -8,7 +8,6 @@ namespace Notification_Service.Core.Domain.SharedKernel.Storage
         public abstract ValueTask<TAggregateRoot> AddAsync(TAggregateRoot aggregateRoot, CancellationToken cancellationToken);
         public abstract Task AddRangeAsync(IReadOnlyList<TAggregateRoot> aggregateRoots, CancellationToken cancellationToken);
         public abstract Task RemoveAsync(TAggregateRoot aggregateRoot, CancellationToken cancellationToken);
-        public abstract Task RemoveRangeAsync(TAggregateRoot aggregateRoot, CancellationToken cancellationToken);
         public abstract Task RemoveRangeAsync(IReadOnlyList<TAggregateRoot> aggregateRoot, CancellationToken cancellationToken);
 
         public IUnitOfWork UnitOfWork
