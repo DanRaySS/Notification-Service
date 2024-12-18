@@ -10,6 +10,6 @@ namespace Notification_Service.Core.Domain
         //public long RecipientId { get; set; } или
         //public string Address { get; set; }
         //public string ChannelType { get; set; }
-        public string Status {  get; set; } // Возможна замена на enum
+        public string Status { get; set; } // Возможна замена на enum
     }
 }
