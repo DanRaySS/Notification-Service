@@ -1,6 +1,7 @@
 ﻿using Notification_Service.Application.Infrastructure.CQS;
 using Notification_Service.Application.Infrastructure.Result;
 using Notification_Service.Core.Domain;
+using Notification_Service.Core.Domain.Events;
 using Notification_Service.Core.Domain.Repositories;
 
 namespace Notification_Service.Application.Features.Notifications
@@ -37,6 +38,9 @@ namespace Notification_Service.Application.Features.Notifications
             notification.Status = request.Status;
 
             await _repository.AddAsync(notification, cancellationToken);
+
+            notification.AddDomainEvent(new CreateEmptyNotification(notification) );
+
             await _repository.UnitOfWork.SaveChangesAsync(cancellationToken);
 
             return Success();
