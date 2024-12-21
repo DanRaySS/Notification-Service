@@ -2,7 +2,7 @@
 
 namespace Notification_Service.Core.Domain.SharedKernel.Specification
 {
-    public class Specification<TAggregateRoot> : ISpecification<TAggregateRoot> where TAggregateRoot : class, TAggregateRoot
+    public class Specification<TAggregateRoot> : ISpecification<TAggregateRoot> where TAggregateRoot : class, IAggregateRoot
     {
         private readonly Expression<Func<TAggregateRoot, bool>> _expression;
         public Specification(Expression<Func<TAggregateRoot, bool>> expression) 

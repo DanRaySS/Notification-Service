@@ -8,7 +8,7 @@ namespace Notification_Service.Application.Features.Notifications
 {
     public class CreateNotificationCommand : Command
     {
-        public string Status { get; set; }
+        public Status Status { get; set; }
     }
 
     public class ValidationError : Error
@@ -39,7 +39,7 @@ namespace Notification_Service.Application.Features.Notifications
 
             await _repository.AddAsync(notification, cancellationToken);
 
-            notification.AddDomainEvent(new CreateEmptyNotification(notification) );
+            notification.AddDomainEvent(new CreateNotificationDomainEvent(notification) );
 
             await _repository.UnitOfWork.SaveChangesAsync(cancellationToken);
 

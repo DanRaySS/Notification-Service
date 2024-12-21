@@ -2,10 +2,10 @@
 
 namespace Notification_Service.Core.Domain.Events
 {
-    public class CreateEmptyNotification : IDomainEvent
+    public class CreateNotificationDomainEvent : IDomainEvent
     {
         public long NotificationId { get; set; }
-        public CreateEmptyNotification(Notification notification)
+        public CreateNotificationDomainEvent(Notification notification)
         {
             NotificationId = notification.Id;
         }

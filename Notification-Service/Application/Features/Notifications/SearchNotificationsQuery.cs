@@ -9,8 +9,8 @@ namespace Notification_Service.Application.Features.Notifications
 {
     public class SearchNotificationsQuery : Query<IReadOnlyList<Notification>>
     {
-        public string Status { get; set; }
-        public string ContentType { get; set; }
+        public Status Status { get; set; }
+        public ContentType ContentType { get; set; }
     }
 
     public class SearchNotificationsQueryHandler : QueryHandler<SearchNotificationsQuery, IReadOnlyList<Notification>>
@@ -26,32 +26,16 @@ namespace Notification_Service.Application.Features.Notifications
         {
             ISpecification<Notification> searchNotificationSpecification = null;
 
-            var searchStatusSpecification = NotificationSpecification.SearchByStatus(request.Status);
-            var searchContentTypeSpecification = NotificationSpecification.SearchByContentType(request.ContentType);
+            var searchStatusSpecification = NotificationSpecification.SearchByStatus(Enum.GetName(request.Status));
+            var searchContentTypeSpecification = NotificationSpecification.SearchByContentType(Enum.GetName(request.ContentType));
 
 
             searchNotificationSpecification = searchContentTypeSpecification.And(searchStatusSpecification);
 
-            if (request.ContentType == "sms")
+            if (request.ContentType == ContentType.Text)
             {
-                searchNotificationSpecification = searchNotificationSpecification.Or(Specification<Notification>.Create(x => string.IsNullOrEmpty(x.Status)));
+                searchNotificationSpecification = searchNotificationSpecification.Or(Specification<Notification>.Create(x => string.IsNullOrEmpty(Enum.GetName(x.Status))));
             }
-
-            //IReadOnlyList<Notification> notifications = null;
-
-            //if (!string.IsNullOrEmpty(request.Status) && string.IsNullOrEmpty(request.ContentType))
-            //{
-            //    notifications = await _notificationRepository.ListAsync(x => x.Status == request.Status, cancellationToken);
-            //} 
-            //else if (!string.IsNullOrEmpty(request.ContentType) && string.IsNullOrEmpty(request.Status))
-            //{
-            //    notifications = await _notificationRepository.ListAsync(x => x.ContentType == request.ContentType, cancellationToken);
-            //} 
-            //else if (!string.IsNullOrEmpty(request.Status) && (!string.IsNullOrEmpty(request.ContentType)))
-            //{
-            //    notifications = await _notificationRepository.ListAsync(x => x.Status == request.Status || x.ContentType == request.ContentType, cancellationToken);
-            //}
-
 
             var notifications = await _notificationRepository.ListAsync(searchNotificationSpecification, cancellationToken);
 
