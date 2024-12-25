@@ -17,7 +17,7 @@
             _domainEvents?.Remove(domainEvent);
         }
 
-        public void ClearDomainEvent()
+        public void ClearDomainEvents()
         {
             _domainEvents?.Clear();
         }

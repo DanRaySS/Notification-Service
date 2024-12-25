@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Notification_Service.Core.Domain;
+using Notification_Service.Core.Domain.SharedKernel;
 using Notification_Service.Core.Domain.SharedKernel.Storage;
 
 namespace Notification_Service.Infrastructure.DataStorage
@@ -21,11 +22,24 @@ namespace Notification_Service.Infrastructure.DataStorage
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ServerDbContext).Assembly);
         }
 
-        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            //var mediator = this.GetService<IMediator>();
-            //await this.DispatchDomainEventsAsync(mediator);
-            return base.SaveChangesAsync(cancellationToken);
+            var mediator = this.GetService<IMediator>();
+            await this.DispatchDomainEventsAsync(mediator);
+            return await base.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    public static class ServerDbContextExtensions
+    {
+        public static async Task DispatchDomainEventsAsync(this ServerDbContext dbContext, IMediator mediator)
+        {
+            var domainEntities = dbContext.ChangeTracker.Entries<Entity>().Where(x => x.Entity.DomainEvents?.Any() ?? false).ToList();
+            var domainEvents = domainEntities.SelectMany(x => x.Entity.DomainEvents).ToList();
+            domainEntities.ForEach(entity => entity.Entity.ClearDomainEvents());
+
+            var tasks = domainEvents.Select(async domainEvent => await mediator.Publish(domainEvent, CancellationToken.None));
+            await Task.WhenAll(tasks);
         }
     }
 }

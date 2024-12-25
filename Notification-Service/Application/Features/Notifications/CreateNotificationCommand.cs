@@ -11,11 +11,6 @@ namespace Notification_Service.Application.Features.Notifications
         public Status Status { get; set; }
     }
 
-    public class ValidationError : Error
-    {
-        public override string Type => nameof(ValidationError);
-    }
-
     public sealed class CreateNotificationCommandHandler : CommandHandler<CreateNotificationCommand>
     {
 
@@ -28,10 +23,10 @@ namespace Notification_Service.Application.Features.Notifications
 
         public override async Task<Result> Handle(CreateNotificationCommand request, CancellationToken cancellationToken)
         {
-            //if (string.IsNullOrWhiteSpace(request.Status))
-            //{
-            //    return Error(new ValidationError() { Data = { { nameof(request.Status), "Invalid type" } }});
-            //}
+            if (string.IsNullOrWhiteSpace(Enum.GetName(request.Status)))
+            {
+                return Error(new ValidationError() { Data = { { nameof(request.Status), "Invalid type" } } });
+            }
             //Некоторая логика
 
             var notification = new Notification();
@@ -45,5 +40,14 @@ namespace Notification_Service.Application.Features.Notifications
 
             return Success();
         }
+    }
+
+    public class ValidationError : Error
+    {
+        //public ValidationError(long id)
+        //{
+        //    Data[nameof(id)] = id;
+        //}
+        public override string Type => nameof(ValidationError);
     }
 }
