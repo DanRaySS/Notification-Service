@@ -22,7 +22,7 @@ namespace Notification_Service.Infrastructure.DataStorage
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ServerDbContext).Assembly);
         }
 
-        public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             var mediator = this.GetService<IMediator>();
             await this.DispatchDomainEventsAsync(mediator);

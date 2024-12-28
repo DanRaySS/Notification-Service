@@ -4,7 +4,7 @@ namespace Notification_Service.Core.Domain.Events
 {
     public class CreateNotificationDomainEvent : IDomainEvent
     {
-        public long NotificationId { get; set; }
+        public Guid NotificationId { get; set; }
         public CreateNotificationDomainEvent(Notification notification)
         {
             NotificationId = notification.Id;

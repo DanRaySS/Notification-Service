@@ -2,6 +2,8 @@ using Notification_Service.Core.Domain.Repositories;
 using Notification_Service.Infrastructure.DataStorage.Repositories;
 using Notification_Service.Infrastructure.DataStorage;
 using Microsoft.EntityFrameworkCore;
+using MassTransit;
+using Notification_Service.Application;
 
 namespace Notification_Service
 {
@@ -18,6 +20,23 @@ namespace Notification_Service
             {
                 x.RegisterServicesFromAssemblyContaining<Program>();
             });
+
+            builder.Services.AddMassTransit(x =>
+            {
+                x.AddConsumer<EmailNotificationConsumer>();
+
+                x.AddBus(provider =>
+                {
+                    return Bus.Factory.CreateUsingRabbitMq(cfg =>
+                    {
+                        cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ"));
+                        cfg.ReceiveEndpoint("Email", epc =>
+                        {
+                            epc.ConfigureConsumer<EmailNotificationConsumer>(provider);
+                        });
+                    });
+                });
+            }); 
 
             builder.Services.AddDbContext<ServerDbContext>(config =>
             {

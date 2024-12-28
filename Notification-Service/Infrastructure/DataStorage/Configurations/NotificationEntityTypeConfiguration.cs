@@ -11,8 +11,8 @@ namespace Notification_Service.Infrastructure.DataStorage.Configurations
             builder.Property(e => e.Status)
                 .HasConversion<string>();
 
-            builder.Property(e => e.ContentType)
-                .HasConversion<string>();
+            //builder.Property(e => e.ContentType)
+            //    .HasConversion<string>();
 
             builder.Property(e => e.ChannelType)
                 .HasConversion<string>();

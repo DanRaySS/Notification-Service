@@ -27,10 +27,10 @@ namespace Notification_Service.Application.Features.Notifications
             ISpecification<Notification> searchNotificationSpecification = null;
 
             var searchStatusSpecification = NotificationSpecification.SearchByStatus(Enum.GetName(request.Status));
-            var searchContentTypeSpecification = NotificationSpecification.SearchByContentType(Enum.GetName(request.ContentType));
+            //var searchContentTypeSpecification = NotificationSpecification.SearchByContentType(Enum.GetName(request.ContentType));
 
 
-            searchNotificationSpecification = searchContentTypeSpecification.And(searchStatusSpecification);
+            //searchNotificationSpecification = searchContentTypeSpecification.And(searchStatusSpecification);
 
             if (request.ContentType == ContentType.Text)
             {
@@ -39,9 +39,9 @@ namespace Notification_Service.Application.Features.Notifications
 
             var notifications = await _notificationRepository.ListAsync(searchNotificationSpecification, cancellationToken);
 
-            var notificationsId = await _notificationRepository.QueryAsync(x => x.Where(searchNotificationSpecification).OrderByDescending(y => y.ContentType).Select(y => y.Id), cancellationToken);
+            var notificationsId = await _notificationRepository.QueryAsync(x => x.Where(searchNotificationSpecification).Select(y => y.Id), cancellationToken);
 
             return Success(notifications);
         }
-    } 
+    }
 }

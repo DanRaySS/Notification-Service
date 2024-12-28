@@ -1,6 +1,7 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.ObjectPool;
+using Notification_Service.Application.Features.Notifications.ErrorTypes;
 using Notification_Service.Application.Infrastructure.CQS;
 using Notification_Service.Application.Infrastructure.Result;
 using Notification_Service.Core.Domain;
@@ -12,7 +13,7 @@ namespace Notification_Service.Application.Features.Notifications
     public class GetNotificationQuery : Query<Notification>
     {
         [FromQuery(Name = "Id")] 
-        public long Id { get; set; }
+        public Guid Id { get; set; }
     }
 
     public class GetNotificationQueryHandler : QueryHandler<GetNotificationQuery, Notification>
@@ -35,18 +36,7 @@ namespace Notification_Service.Application.Features.Notifications
                 return Error(new NotificationNotFoundError(request.Id));
             }
 
-            //notification
-
             return Success(notification);
         }  
-    }
-
-    public class NotificationNotFoundError : Error
-    {
-        public NotificationNotFoundError(long id)
-        {
-            Data[nameof(id)] = id;
-        }
-        public override string Type => nameof(NotificationNotFoundError);
     }
 }

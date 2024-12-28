@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Notification_Service.Application.Features.Notifications;
+using System.Threading;
 
 namespace Notification_Service.Controllers
 {
@@ -18,8 +19,13 @@ namespace Notification_Service.Controllers
         }
 
         [HttpPost("")]
-        public IActionResult CreateNotification([FromBody]CreateNotificationCommand command)
+        public async Task<IActionResult> CreateNotification([FromBody]CreateNotificationCommand command, CancellationToken cancellationToken)
         {
+            var result = await _mediator.Send(command, cancellationToken);
+            if (!result.IsSuccessfull)
+            {
+                return BadRequest(result.GetErrors().FirstOrDefault());
+            }
             return Ok();
         }
 
