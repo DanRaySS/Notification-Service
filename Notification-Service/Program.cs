@@ -4,6 +4,7 @@ using Notification_Service.Infrastructure.DataStorage;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
 using Notification_Service.Application;
+using Notification_Service.Application.Services;
 
 namespace Notification_Service
 {
@@ -16,6 +17,7 @@ namespace Notification_Service
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddMediatR(x =>
             {
                 x.RegisterServicesFromAssemblyContaining<Program>();
@@ -45,6 +47,7 @@ namespace Notification_Service
             });
 
             builder.Services.RegisterRepository<INotificationRepository, NotificationRepository>();
+            builder.Services.AddScoped<NotificationService>();
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

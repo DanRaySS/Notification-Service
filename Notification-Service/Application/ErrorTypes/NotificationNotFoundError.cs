@@ -1,6 +1,6 @@
 ﻿using Notification_Service.Application.Infrastructure.Result;
 
-namespace Notification_Service.Application.Features.Notifications.ErrorTypes
+namespace Notification_Service.Application.ErrorTypes
 {
     public class NotificationNotFoundError : Error
     {

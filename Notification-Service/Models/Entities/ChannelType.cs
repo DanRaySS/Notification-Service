@@ -5,5 +5,6 @@ namespace Notification_Service.Entities
         Email,
         SMS,
         Telegram,
+        All,
     }
 }

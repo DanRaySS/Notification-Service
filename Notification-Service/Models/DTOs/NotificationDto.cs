@@ -1,3 +1,5 @@
+using Notification_Service.Core.Domain;
+
 namespace Notification_Service.DTOs
 {
     public class NotificationDto
