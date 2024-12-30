@@ -3,6 +3,7 @@ using Notification_Service.Application.Infrastructure.Result;
 using Notification_Service.Core.Domain;
 using Notification_Service.Core.Domain.SharedKernel.Specification;
 using Notification_Service.Core.Domain.SharedKernel.Storage;
+using Notification_Service.Entities;
 using Notification_Service.Infrastructure.DataStorage.Repositories;
 
 namespace Notification_Service.Application.Features.Notifications
@@ -10,7 +11,7 @@ namespace Notification_Service.Application.Features.Notifications
     public class SearchNotificationsQuery : Query<IReadOnlyList<Notification>>
     {
         public Status Status { get; set; }
-        public ContentType ContentType { get; set; }
+        // public ContentType ContentType { get; set; }
     }
 
     public class SearchNotificationsQueryHandler : QueryHandler<SearchNotificationsQuery, IReadOnlyList<Notification>>
@@ -32,10 +33,10 @@ namespace Notification_Service.Application.Features.Notifications
 
             //searchNotificationSpecification = searchContentTypeSpecification.And(searchStatusSpecification);
 
-            if (request.ContentType == ContentType.Text)
-            {
-                searchNotificationSpecification = searchNotificationSpecification.Or(Specification<Notification>.Create(x => string.IsNullOrEmpty(Enum.GetName(x.Status))));
-            }
+            // if (request.ContentType == ContentType.Text)
+            // {
+            //     searchNotificationSpecification = searchNotificationSpecification.Or(Specification<Notification>.Create(x => string.IsNullOrEmpty(Enum.GetName(x.Status))));
+            // }
 
             var notifications = await _notificationRepository.ListAsync(searchNotificationSpecification, cancellationToken);
 

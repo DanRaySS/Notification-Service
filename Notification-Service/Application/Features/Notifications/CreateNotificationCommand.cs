@@ -1,30 +1,15 @@
 ﻿using MassTransit;
-using MediatR;
 using Notification_Service.Application.Features.Notifications.ErrorTypes;
 using Notification_Service.Application.Infrastructure.CQS;
 using Notification_Service.Application.Infrastructure.Result;
 using Notification_Service.Core.Domain;
-using Notification_Service.Core.Domain.Events;
 using Notification_Service.Core.Domain.Repositories;
-using System.Text;
+using Notification_Service.DTOs;
+using Notification_Service.Entities;
 
 namespace Notification_Service.Application.Features.Notifications
 {
-    public class CreateNotificationCommand : Command
-    {
-        //public byte[] Title { get; set; }
-        //public byte[] Content { get; set; }
-
-        public string Title { get; set; }
-        public string TextContent { get; set; }
-        //public string ContentType { get; set; }
-        public string Address { get; set; }
-        public string ChannelType { get; set; }
-        //public Status Status { get; set; }
-        //public DateTimeOffset CreatedAt { get; set; }
-    }
-
-    public sealed class CreateNotificationCommandHandler : CommandHandler<CreateNotificationCommand>
+    public sealed class CreateNotificationCommandHandler : CommandHandler<CreateNotificationDto>
     {
 
         INotificationRepository _repository;
@@ -36,7 +21,7 @@ namespace Notification_Service.Application.Features.Notifications
             _bus = bus;
         }
 
-        public override async Task<Result> Handle(CreateNotificationCommand request, CancellationToken cancellationToken)
+        public override async Task<Result> Handle(CreateNotificationDto request, CancellationToken cancellationToken)
         {    
             if (string.IsNullOrWhiteSpace(request.Address))
             {

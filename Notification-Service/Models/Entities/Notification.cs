@@ -1,7 +1,10 @@
-﻿using Notification_Service.Core.Domain.SharedKernel;
+using System.ComponentModel.DataAnnotations.Schema;
+using Notification_Service.Core.Domain.SharedKernel;
+using Notification_Service.Entities;
 
 namespace Notification_Service.Core.Domain
 {
+    [Table("Notifications")]
     public class Notification: Entity<Guid>, IAggregateRoot
     {
         public string Title { get; set; }
@@ -11,26 +14,13 @@ namespace Notification_Service.Core.Domain
         public string Address { get; set; }
         public ChannelType ChannelType { get; set; }
         public Status Status { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 
-    public enum Status
-    {
-        Error,
-        Success,
-        Resent,
-    }
-
-    public enum ChannelType
-    {
-        Email,
-        SMS,
-        Telegram,
-    }
-
-    public enum ContentType
-    {
-        Text,
-        Image,
-    }
+    // public enum ContentType
+    // {
+    //     Text,
+    //     Image,
+    // }
 }

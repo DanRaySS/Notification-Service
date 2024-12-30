@@ -46,6 +46,8 @@ namespace Notification_Service
 
             builder.Services.RegisterRepository<INotificationRepository, NotificationRepository>();
 
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
             var app = builder.Build();
 
             app.MapGet("/", (HttpContext httpContext) =>
@@ -63,7 +65,16 @@ namespace Notification_Service
             app.UseRouting();
             app.MapControllers();
 
-            app.UseHttpsRedirection();
+            try
+            {
+                DbInitializer.InitDb(app);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+
+            // app.UseHttpsRedirection();
             app.Run();
         }
     }

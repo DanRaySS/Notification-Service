@@ -9,10 +9,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Notification_Service.Migrations
+namespace Notification_Service.Infrastructure.DataStorage.Migrations
 {
     [DbContext(typeof(ServerDbContext))]
-    [Migration("20241228192515_InitialCreate")]
+    [Migration("20241229234125_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -32,14 +32,13 @@ namespace Notification_Service.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("ChannelType")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTimeOffset>("CreatedAt")
+                    b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Status")
@@ -47,12 +46,13 @@ namespace Notification_Service.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("TextContent")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("Title")
-                        .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
 
