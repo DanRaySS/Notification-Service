@@ -6,6 +6,7 @@ namespace Notification_Service.Core.Domain.SharedKernel.Storage
         ReadOnlyRepository<TAggregateRoot>, IRepository<TAggregateRoot> where TAggregateRoot : class, IAggregateRoot
     {
         public abstract ValueTask<TAggregateRoot> AddAsync(TAggregateRoot aggregateRoot, CancellationToken cancellationToken);
+        public abstract ValueTask<TAggregateRoot> Update(TAggregateRoot aggregateRoot, CancellationToken cancellationToken);
         public abstract Task AddRangeAsync(IReadOnlyList<TAggregateRoot> aggregateRoots, CancellationToken cancellationToken);
         public abstract Task RemoveAsync(TAggregateRoot aggregateRoot, CancellationToken cancellationToken);
         public abstract Task RemoveRangeAsync(IReadOnlyList<TAggregateRoot> aggregateRoot, CancellationToken cancellationToken);

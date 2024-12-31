@@ -2,15 +2,15 @@
 
 namespace Notification_Service.Application
 {
-    public sealed class EmailNotificationConsumer : IConsumer<IEmailNotification>
+    public sealed class NotificationConsumer : IConsumer<INotification>
     {
-        private readonly ILogger<EmailNotificationConsumer> _logger;
-        public EmailNotificationConsumer(ILogger<EmailNotificationConsumer> logger)
+        private readonly ILogger<NotificationConsumer> _logger;
+        public NotificationConsumer(ILogger<NotificationConsumer> logger)
         {
             _logger = logger;
         }
 
-        public Task Consume(ConsumeContext<IEmailNotification> context)
+        public Task Consume(ConsumeContext<INotification> context)
         {
             _logger.LogInformation($"Notification received with title: {context.Message.Title}");
             return Task.CompletedTask;

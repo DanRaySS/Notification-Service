@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using MassTransit;
 using Microsoft.OpenApi.Extensions;
@@ -11,7 +7,6 @@ using Notification_Service.Core.Domain;
 using Notification_Service.Core.Domain.Repositories;
 using Notification_Service.DTOs;
 using Notification_Service.Entities;
-using Notification_Service.RequestHelper;
 
 namespace Notification_Service.Application.Services
 {
@@ -71,7 +66,51 @@ namespace Notification_Service.Application.Services
             await _repository.AddAsync(notification, cancellationToken);
             await _repository.UnitOfWork.SaveChangesAsync(cancellationToken);
 
-            await _bus.Publish<IEmailNotification>(new
+            await _bus.Publish<INotification>(new
+            {
+                //ContentType = notification.ContentType,
+                TextContent = notification.TextContent,
+                Title = notification.Title,
+            }, cancellationToken);
+
+            return Result.Success();
+        }
+
+        public async Task<Result> UpdateNotificationById(UpdateNotificationDto request, Guid id, CancellationToken cancellationToken)
+        {
+            var notification = await _repository.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+            if (notification == null)
+            {
+                return Result<NotificationDto>.Error(new NotificationNotFoundError(id));
+            }
+
+            if (request.ChannelType != null) 
+            {
+                switch (request.ChannelType)
+                {
+                    case "Email":
+                        notification.ChannelType = ChannelType.Email;
+                        break;
+                    case "SMS":
+                        notification.ChannelType = ChannelType.SMS;
+                        break;
+                    case "Telegram":
+                        notification.ChannelType = ChannelType.Telegram;
+                        break;
+                    default:
+                        return Result<NotificationDto>.Error(new ValidationError() { Data = { { nameof(request.ChannelType), "Invalid type" } } });
+                }
+            }
+
+            notification.Address = request.Address ?? notification.Address;
+            notification.Title = request.Title ?? notification.Title;
+            notification.TextContent = request.TextContent ?? notification.TextContent;
+
+            await _repository.Update(notification, cancellationToken);
+            await _repository.UnitOfWork.SaveChangesAsync(cancellationToken);
+
+            await _bus.Publish<INotification>(new
             {
                 //ContentType = notification.ContentType,
                 TextContent = notification.TextContent,
@@ -85,12 +124,12 @@ namespace Notification_Service.Application.Services
         {
             var notification = await _repository.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
-            var result = _mapper.Map<NotificationDto>(notification);
-
             if (notification == null)
             {
                 return Result<NotificationDto>.Error(new NotificationNotFoundError(id));
             }
+
+            var result = _mapper.Map<NotificationDto>(notification);
 
             return Result<NotificationDto>.Success(result);
         }
@@ -99,12 +138,12 @@ namespace Notification_Service.Application.Services
         {
             var notifications = await _repository.ListAsync(cancellationToken);
 
-            var result = _mapper.Map<List<NotificationDto>>(notifications);
-
             // if (notifications.Count == 0)
             // {
             //     return Result<NotificationDto>.Error(new NotificationNotFoundError(id));
             // }
+
+            var result = _mapper.Map<List<NotificationDto>>(notifications);
 
             return Result<List<NotificationDto>>.Success(result);
         }

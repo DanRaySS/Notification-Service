@@ -25,7 +25,7 @@ namespace Notification_Service
 
             builder.Services.AddMassTransit(x =>
             {
-                x.AddConsumer<EmailNotificationConsumer>();
+                x.AddConsumer<NotificationConsumer>();
 
                 x.AddBus(provider =>
                 {
@@ -34,7 +34,7 @@ namespace Notification_Service
                         cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ"));
                         cfg.ReceiveEndpoint("Email", epc =>
                         {
-                            epc.ConfigureConsumer<EmailNotificationConsumer>(provider);
+                            epc.ConfigureConsumer<NotificationConsumer>(provider);
                         });
                     });
                 });

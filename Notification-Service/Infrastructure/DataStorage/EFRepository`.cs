@@ -23,7 +23,13 @@ namespace Notification_Service.Infrastructure.DataStorage
         {
             var entry = await _context.AddAsync(aggregateRoot, cancellationToken);
             return entry.Entity; 
-        } 
+        }
+
+        public override ValueTask<TAggregateRoot> Update(TAggregateRoot aggregateRoot, CancellationToken cancellationToken)
+        {
+            var entry = _context.Update(aggregateRoot);
+            return new ValueTask<TAggregateRoot>(entry.Entity);
+        }
 
         public override Task AddRangeAsync(IReadOnlyList<TAggregateRoot> aggregateRoots, CancellationToken cancellationToken)
         {

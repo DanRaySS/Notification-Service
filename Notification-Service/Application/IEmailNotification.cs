@@ -2,7 +2,7 @@
 
 namespace Notification_Service.Application
 {
-    public interface IEmailNotification
+    public interface INotification
     {
         //public ContentType ContentType { get; set; }
         public string TextContent { get; set; }
