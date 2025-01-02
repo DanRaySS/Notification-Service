@@ -1,44 +1,73 @@
+using System.Net;
+using System.Net.Mail;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapGet("/send-email", async () =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+        string smtpServer = "smtp.yandex.ru";
+        int smtpPort = 587;
+        string username = "DanRayZed";
+        string password = "rrzwvdmsmlebtvso";
 
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast =  Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
+        var client = new SmtpClient(smtpServer, smtpPort)
+        {
+            Credentials = new NetworkCredential(username, password),
+            EnableSsl = true
+        };
+
+        var mail = new MailMessage
+            {
+                From = new MailAddress("DanRayZed@yandex.com"),
+                Subject = "Test Email",
+                Body = "This is a test email.",
+                IsBodyHtml = false
+            };
+            //Указать почту получателя
+            mail.To.Add("danilmux@gmail.com");
+
+            try
+            {
+                await client.SendMailAsync(mail);
+                Console.WriteLine("Email sent successfully.");
+                return "Email sent successfully.";
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to send email: {ex.Message}");
+                return "Error";
+            }
+
+        //Нагрузочное тестирование
+        // for (int i = 0; i < 1000; i++) // Задайте количество писем
+        // {
+        //     var mail = new MailMessage
+        //     {
+        //         From = new MailAddress("your_email@example.com"),
+        //         Subject = $"Test Email {i + 1}",
+        //         Body = "This is a test email.",
+        //         IsBodyHtml = false
+        //     };
+        //     mail.To.Add("recipient@example.com");
+
+        //     try
+        //     {
+        //         await client.SendMailAsync(mail);
+        //         Console.WriteLine($"Email {i + 1} sent successfully.");
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         Console.WriteLine($"Failed to send email {i + 1}: {ex.Message}");
+        //     }
+        // }
+        
 })
-.WithName("GetWeatherForecast")
-.WithOpenApi();
+.WithName("send-email");
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
