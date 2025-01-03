@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using API_Service.Core.Domain;
 using API_Service.Entities;
+using Contracts;
 
 namespace API_Service.Infrastructure.DataStorage
 {
@@ -43,7 +44,7 @@ namespace API_Service.Infrastructure.DataStorage
                 },                
                 new() {
                     Id = Guid.NewGuid(),
-                    Status = Status.Resent,
+                    Status = Status.ResentSuccess,
                     Title = "Notification 3",
                     TextContent = "Message 3",
                     Address = "@pp_gg",
@@ -51,11 +52,11 @@ namespace API_Service.Infrastructure.DataStorage
                 },                
                 new() {
                     Id = Guid.NewGuid(),
-                    Status = Status.Success,
+                    Status = Status.ResentError,
                     Title = "Notification 4",
                     TextContent = "Message 4",
                     Address = "+79000000000",
-                    ChannelType = ChannelType.SMS,
+                    ChannelType = ChannelType.Email,
                 },                
                 new() {
                     Id = Guid.NewGuid(),

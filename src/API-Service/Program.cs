@@ -3,8 +3,8 @@ using API_Service.Infrastructure.DataStorage.Repositories;
 using API_Service.Infrastructure.DataStorage;
 using Microsoft.EntityFrameworkCore;
 using MassTransit;
-using API_Service.Application;
 using API_Service.Application.Services;
+using Notification_Service.Consumers;
 
 namespace API_Service
 {
@@ -21,23 +21,29 @@ namespace API_Service
 
             builder.Services.AddMassTransit(x =>
             {
+                x.AddEntityFrameworkOutbox<ServerDbContext>(o => { 
+                    o.QueryDelay = TimeSpan.FromSeconds(10);
+
+                    o.UsePostgres();
+                    o.UseBusOutbox();
+                });
+
+                //Test functionality
+                x.AddConsumersFromNamespaceContaining<NotificationCreatedFaultConsumer>();
+                x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("notification", false));
+
+                x.AddConsumersFromNamespaceContaining<NotificationSentConsumer>();
+                x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("sent", false));
+
                 x.UsingRabbitMq((context, cfg) =>
                 {
+                    cfg.ReceiveEndpoint("email-notification-sent", e => {
+                        e.UseMessageRetry(r => r.Interval(5, 5));
+
+                        e.ConfigureConsumer<NotificationSentConsumer>(context);
+                    });
                     cfg.ConfigureEndpoints(context);
                 });
-                // x.AddConsumer<NotificationConsumer>();
-
-                // x.AddBus(provider =>
-                // {
-                //     return Bus.Factory.CreateUsingRabbitMq(cfg =>
-                //     {
-                //         cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ"));
-                //         cfg.ReceiveEndpoint("Email", epc =>
-                //         {
-                //             epc.ConfigureConsumer<NotificationConsumer>(provider);
-                //         });
-                //     });
-                // });
             }); 
 
             builder.Services.AddDbContext<ServerDbContext>(config =>
@@ -77,7 +83,6 @@ namespace API_Service
                 Console.WriteLine(e);
             }
 
-            // app.UseHttpsRedirection();
             app.Run();
         }
     }

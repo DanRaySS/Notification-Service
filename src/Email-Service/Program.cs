@@ -7,7 +7,6 @@ using MassTransit;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
-// builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var data = new SMTP_Data();
 
@@ -28,18 +27,21 @@ builder.Services.AddScoped<SMTP_Data>(s => data);
 
 builder.Services.AddMassTransit(x =>
 {
-    //client, builder.Configuration.GetConnectionString("sender")
-    x.AddConsumersFromNamespaceContaining<NotificationCreatedConsumer>();
+    x.AddConsumers(typeof(Program).Assembly);
     x.SetEndpointNameFormatter(new KebabCaseEndpointNameFormatter("email", false));
 
     x.UsingRabbitMq((context, cfg) =>
     {
+        cfg.ReceiveEndpoint("email-notification-created", e => {
+            e.UseMessageRetry(r => r.Interval(5, 5));
+
+            e.ConfigureConsumers(context);
+        });
+    
         cfg.ConfigureEndpoints(context);
     });
 }); 
 
 var app = builder.Build();
-
-app.UseHttpsRedirection();
 
 app.Run();

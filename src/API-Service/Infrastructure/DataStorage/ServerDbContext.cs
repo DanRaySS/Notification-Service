@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using API_Service.Core.Domain;
 using API_Service.Core.Domain.SharedKernel.Storage;
+using MassTransit;
 
 namespace API_Service.Infrastructure.DataStorage
 {
@@ -16,6 +17,9 @@ namespace API_Service.Infrastructure.DataStorage
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.AddInboxStateEntity();
+            modelBuilder.AddOutboxMessageEntity();
+            modelBuilder.AddOutboxStateEntity();
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ServerDbContext).Assembly);
         }
 

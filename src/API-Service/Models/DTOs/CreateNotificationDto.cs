@@ -9,9 +9,6 @@ namespace API_Service.DTOs
         [Required]
         public string TextContent { get; set; }
         [Required]
-        //public string ContentType { get; set; }
         public string Address { get; set; }
-        // public Status Status { get; set; }
-        //public DateTimeOffset CreatedAt { get; set; }
     }
 }

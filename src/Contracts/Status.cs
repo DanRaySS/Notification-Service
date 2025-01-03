@@ -1,10 +1,11 @@
-namespace API_Service.Entities
+namespace Contracts
 {
     public enum Status
     {
         Live,
         Success,
         Error,
-        Resent
+        ResentSuccess,
+        ResentError
     }
 }

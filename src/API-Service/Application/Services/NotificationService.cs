@@ -13,20 +13,19 @@ namespace API_Service.Application.Services
     public class NotificationService
     {
         INotificationRepository _repository;
-        IBus _bus;
         IMapper _mapper;
         private readonly IPublishEndpoint _publishEndpoint;
 
-        public NotificationService(INotificationRepository repository, IBus bus, IMapper mapper, IPublishEndpoint publishEndpoint) 
+        public NotificationService(INotificationRepository repository, IMapper mapper, IPublishEndpoint publishEndpoint) 
         {
             _mapper = mapper;
             _publishEndpoint = publishEndpoint;
             _repository = repository;
-            _bus = bus;
         }
 
         public async Task<Result> SendNotification(CreateNotificationDto request, string type, CancellationToken cancellationToken)
         {
+            //Проверка полей на пустоту
             if (string.IsNullOrWhiteSpace(request.Address))
             {
                 return Result.Error(new ValidationError() { Data = { { nameof(request.Address), "Invalid type" } } });
@@ -43,7 +42,8 @@ namespace API_Service.Application.Services
             var notification = _mapper.Map<Notification>(request);
 
             notification.Id = Guid.NewGuid();
-            notification.Status = Status.Success;
+            // Устанавливается по деффолту
+            // notification.Status = Status.Live;
             notification.CreatedAt = DateTime.UtcNow;
 
             if (type != null) 
@@ -70,20 +70,11 @@ namespace API_Service.Application.Services
                         return Result<NotificationDto>.Error(new ValidationError() { Data = { { nameof(notification.ChannelType), "Invalid type" } } });
                 }
             }
-            
-            var asd = _mapper.Map<NotificationCreated>(notification);
 
             await _publishEndpoint.Publish(_mapper.Map<NotificationCreated>(notification));
 
             await _repository.AddAsync(notification, cancellationToken);
             await _repository.UnitOfWork.SaveChangesAsync(cancellationToken);
-
-            await _bus.Publish<INotification>(new
-            {
-                //ContentType = notification.ContentType,
-                TextContent = notification.TextContent,
-                Title = notification.Title,
-            }, cancellationToken);
 
             return Result.Success();
         }
@@ -126,15 +117,30 @@ namespace API_Service.Application.Services
             notification.Title = request.Title ?? notification.Title;
             notification.TextContent = request.TextContent ?? notification.TextContent;
 
+            var updatedNotification = _mapper.Map<NotificationUpdated>(notification);
+            updatedNotification.Id = id;
+
+            await _publishEndpoint.Publish(updatedNotification);
+
             await _repository.Update(notification, cancellationToken);
             await _repository.UnitOfWork.SaveChangesAsync(cancellationToken);
 
-            await _bus.Publish<INotification>(new
+            return Result.Success();
+        }
+
+        public async Task<Result> UpdateNotificationStatusById(Guid id, Status status, CancellationToken cancellationToken)
+        {
+            var notification = await _repository.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+
+            if (notification == null)
             {
-                //ContentType = notification.ContentType,
-                TextContent = notification.TextContent,
-                Title = notification.Title,
-            }, cancellationToken);
+                return Result<NotificationDto>.Error(new NotificationNotFoundError(id));
+            }
+
+            notification.Status = status;
+
+            await _repository.Update(notification, cancellationToken);
+            await _repository.UnitOfWork.SaveChangesAsync(cancellationToken);
 
             return Result.Success();
         }
