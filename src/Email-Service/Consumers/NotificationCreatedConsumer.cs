@@ -1,22 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using MassTransit;
 using Contracts;
 using System.Net.Mail;
+using Email_Service.Models;
 
 namespace Email_Service.Consumers
 {
     public class NotificationCreatedConsumer : IConsumer<NotificationCreated>
     {
-        private readonly SmtpClient _client;
-        private readonly string _sender;
+        private readonly SMTP_Data _smtpData;
 
-        public NotificationCreatedConsumer(SmtpClient client, string sender) 
+        public NotificationCreatedConsumer(SMTP_Data smtpData) 
         {
-            _client = client;
-            _sender = sender;
+            _smtpData = smtpData;
         }
 
         public async Task Consume(ConsumeContext<NotificationCreated> context)
@@ -25,7 +20,7 @@ namespace Email_Service.Consumers
             
             var mail = new MailMessage
             {
-                From = new MailAddress(_sender),
+                From = new MailAddress(_smtpData.sender),
                 Subject = notification.Title,
                 Body = notification.TextContent,
                 IsBodyHtml = false
@@ -34,7 +29,7 @@ namespace Email_Service.Consumers
 
             try
             {
-                await _client.SendMailAsync(mail);
+                await _smtpData.smtpClient.SendMailAsync(mail);
                 Console.WriteLine("Email sent successfully.");
                 // return "Email sent successfully.";
             }
