@@ -18,26 +18,26 @@ namespace API_Service
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-            builder.Services.AddMediatR(x =>
-            {
-                x.RegisterServicesFromAssemblyContaining<Program>();
-            });
 
             builder.Services.AddMassTransit(x =>
             {
-                x.AddConsumer<NotificationConsumer>();
-
-                x.AddBus(provider =>
+                x.UsingRabbitMq((context, cfg) =>
                 {
-                    return Bus.Factory.CreateUsingRabbitMq(cfg =>
-                    {
-                        cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ"));
-                        cfg.ReceiveEndpoint("Email", epc =>
-                        {
-                            epc.ConfigureConsumer<NotificationConsumer>(provider);
-                        });
-                    });
+                    cfg.ConfigureEndpoints(context);
                 });
+                // x.AddConsumer<NotificationConsumer>();
+
+                // x.AddBus(provider =>
+                // {
+                //     return Bus.Factory.CreateUsingRabbitMq(cfg =>
+                //     {
+                //         cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ"));
+                //         cfg.ReceiveEndpoint("Email", epc =>
+                //         {
+                //             epc.ConfigureConsumer<NotificationConsumer>(provider);
+                //         });
+                //     });
+                // });
             }); 
 
             builder.Services.AddDbContext<ServerDbContext>(config =>
