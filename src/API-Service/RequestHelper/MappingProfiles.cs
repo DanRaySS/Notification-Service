@@ -1,6 +1,7 @@
 using AutoMapper;
 using API_Service.Core.Domain;
 using API_Service.DTOs;
+using Contracts;
 
 namespace API_Service.RequestHelper
 {
@@ -10,6 +11,7 @@ namespace API_Service.RequestHelper
         {
             CreateMap<Notification, NotificationDto>();
             CreateMap<CreateNotificationDto, Notification>();
+            CreateMap<Notification, NotificationCreated>();
         }
     }
 }

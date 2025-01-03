@@ -9,9 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 // builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-var data = new SMTP_Data
-{
-    smtpClient = new SmtpClient(
+var data = new SMTP_Data();
+
+data.smtpClient = new SmtpClient(
     builder.Configuration.GetConnectionString("smtpServer"),
     Convert.ToInt32(builder.Configuration.GetConnectionString("smtpPort")))
     {
@@ -20,10 +20,9 @@ var data = new SMTP_Data
         builder.Configuration.GetConnectionString("password")
     ),
         EnableSsl = true
-    },
+    };
 
-    sender = builder.Configuration.GetConnectionString("sender")
-};
+data.sender = builder.Configuration.GetConnectionString("sender");
 
 builder.Services.AddScoped<SMTP_Data>(s => data);
 

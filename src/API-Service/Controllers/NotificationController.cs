@@ -1,10 +1,8 @@
-﻿using AutoMapper;
-using MediatR;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using API_Service.Application.ErrorTypes;
 using API_Service.Application.Services;
 using API_Service.DTOs;
-using API_Service.Entities;
 
 namespace API_Service.Controllers
 {
@@ -15,7 +13,8 @@ namespace API_Service.Controllers
         public ILogger<NotificationController> _logger { get; }
         private readonly NotificationService _service;
 
-        public NotificationController(ILogger<NotificationController> logger, NotificationService service)
+        public NotificationController(ILogger<NotificationController> logger, 
+            NotificationService service)
         {
             _logger = logger;
             _service = service;

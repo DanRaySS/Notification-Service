@@ -1,8 +1,5 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
+﻿using Microsoft.EntityFrameworkCore;
 using API_Service.Core.Domain;
-using API_Service.Core.Domain.SharedKernel;
 using API_Service.Core.Domain.SharedKernel.Storage;
 
 namespace API_Service.Infrastructure.DataStorage
@@ -24,7 +21,6 @@ namespace API_Service.Infrastructure.DataStorage
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            var mediator = this.GetService<IMediator>();
             return await base.SaveChangesAsync(cancellationToken);
         }
     }

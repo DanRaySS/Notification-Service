@@ -6,6 +6,7 @@ using API_Service.Core.Domain;
 using API_Service.Core.Domain.Repositories;
 using API_Service.DTOs;
 using API_Service.Entities;
+using Contracts;
 
 namespace API_Service.Application.Services
 {
@@ -14,10 +15,12 @@ namespace API_Service.Application.Services
         INotificationRepository _repository;
         IBus _bus;
         IMapper _mapper;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public NotificationService(INotificationRepository repository, IBus bus, IMapper mapper) 
+        public NotificationService(INotificationRepository repository, IBus bus, IMapper mapper, IPublishEndpoint publishEndpoint) 
         {
             _mapper = mapper;
+            _publishEndpoint = publishEndpoint;
             _repository = repository;
             _bus = bus;
         }
@@ -67,6 +70,10 @@ namespace API_Service.Application.Services
                         return Result<NotificationDto>.Error(new ValidationError() { Data = { { nameof(notification.ChannelType), "Invalid type" } } });
                 }
             }
+            
+            var asd = _mapper.Map<NotificationCreated>(notification);
+
+            await _publishEndpoint.Publish(_mapper.Map<NotificationCreated>(notification));
 
             await _repository.AddAsync(notification, cancellationToken);
             await _repository.UnitOfWork.SaveChangesAsync(cancellationToken);
