@@ -1,5 +1,7 @@
-using System.Net;
-using System.Net.Mail;
+using MassTransit;
+using Twilio;
+using Twilio.Exceptions;
+using Twilio.Rest.Api.V2010.Account;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,13 +31,20 @@ app.MapGet("/send-sms", async () =>
         TwilioClient.Init(accountSid, authToken);
 
         // Отправка SMS
-        var message = MessageResource.Create(
-            body: "Привет! Это тестовое сообщение от Twilio.",
-            from: new Twilio.Types.PhoneNumber("Ваш_номер_Twilio"),
-            to: new Twilio.Types.PhoneNumber("Номер_получателя")
-        );
 
-        Console.WriteLine($"Сообщение отправлено! SID: {message.Sid}");
+
+        try {
+            var message = MessageResource.Create(
+                body: "Привет! Это тестовое сообщение от Twilio.",
+                from: new Twilio.Types.PhoneNumber("Ваш_номер_Twilio"),
+                to: new Twilio.Types.PhoneNumber("Номер_получателя")
+            );
+            Console.WriteLine($"Сообщение отправлено! SID: {message.Sid}");
+        } catch (ApiException e) {
+            Console.WriteLine($"Ошибка при отправке SMS: {e.Message}");
+        }
+
+        
     })
 .WithName("send-sms");
 
