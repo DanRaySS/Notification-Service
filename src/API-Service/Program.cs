@@ -42,6 +42,13 @@ namespace API_Service
 
                         e.ConfigureConsumer<NotificationSentConsumer>(context);
                     });
+
+                    cfg.ReceiveEndpoint("sms-notification-sent", e => {
+                        e.UseMessageRetry(r => r.Interval(5, 5));
+
+                        e.ConfigureConsumer<NotificationSentConsumer>(context);
+                    });
+
                     cfg.ConfigureEndpoints(context);
                 });
             }); 
