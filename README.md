@@ -17,5 +17,5 @@
 </ol>
 <h2>Дополнительная информация:</h2>
 <ol>
-  <li>Для создания отправки уведомления нужно указать channelType: Email, SMS, All ...</li>
+  <li>channelTypes: Email, SMS, All ...</li>
 </ol>
