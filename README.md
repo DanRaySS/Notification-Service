@@ -7,6 +7,10 @@
   <li>http://localhost:7001/swagger/index.html</li>
   <b>RabbitMq</b> :
   <li>http://localhost:15672/#/queues</li>
+  <b>Prometheus</b> :
+  <li>http://localhost:9090</li>
+  <b>Grafana</b> :
+  <li>http://localhost:3000</li>
 </ul>
 <h2>Технические детали сервиса:</h2>
 <ol>

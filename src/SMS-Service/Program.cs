@@ -1,5 +1,6 @@
 using MassTransit;
 using Twilio;
+using Prometheus;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +32,11 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
+app.UseHttpMetrics();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapMetrics(); // /metrics endpoint для сбора метрик
+});
 
 app.Run();

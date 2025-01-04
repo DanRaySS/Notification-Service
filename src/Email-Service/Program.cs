@@ -3,6 +3,7 @@ using System.Net.Mail;
 using Email_Service.Consumers;
 using Email_Service.Models;
 using MassTransit;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,5 +50,12 @@ builder.Services.AddMassTransit(x =>
 }); 
 
 var app = builder.Build();
+
+app.UseHttpMetrics();
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+    endpoints.MapMetrics(); // /metrics endpoint для сбора метрик
+});
 
 app.Run();

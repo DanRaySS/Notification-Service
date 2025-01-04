@@ -2,11 +2,21 @@ using MassTransit;
 using Contracts;
 using System.Net.Mail;
 using Email_Service.Models;
+using Prometheus;
 
 namespace Email_Service.Consumers
 {
     public class NotificationCreatedConsumer : IConsumer<EmailNotificationCreated>
     {
+        private static readonly Counter SendCounter = Metrics.CreateCounter(
+            "email_send_notifications_total", "Total number of attempts to send email notifications.");
+        private static readonly Histogram SendDuration = Metrics.CreateHistogram(
+            "email_send_notifications_seconds", "Duration of attempts to send email notifications in seconds.");
+        private static readonly Counter SendStatusCounter = Metrics.CreateCounter(
+            "email_send_statuses_total", "Total number of email send attempts statuses sent back.");
+        private static readonly Histogram SendStatusDuration = Metrics.CreateHistogram(
+            "email_send_statuses_seconds", "Duration of email send attempts statuses sent back in seconds.");
+
         private readonly SMTP_Data _smtpData;
         private readonly IPublishEndpoint _publishEndpoint;
 
@@ -18,34 +28,46 @@ namespace Email_Service.Consumers
 
         public async Task Consume(ConsumeContext<EmailNotificationCreated> context)
         {
-            //debug
-            Console.WriteLine("Consuming notification created: " + context.Message.Id);
-
-            var notification = context.Message;
-            // Проверка при необходимости
-            // if (notification.Address == "Foo") throw new ArgumentException("Cannot send email to address Foo (without @).");
-            
-            var mail = new MailMessage
+            // Метрики для отправки Email-уведомлений
+            SendCounter.Inc();
+            using (SendDuration.NewTimer()) 
             {
-                From = new MailAddress(_smtpData.sender),
-                Subject = notification.Title,
-                Body = notification.TextContent,
-                IsBodyHtml = false
-            };
+                //debug
+                Console.WriteLine("Consuming notification created: " + context.Message.Id);
 
-            mail.To.Add(notification.Address);
-
-            try
-            {
-                await _smtpData.smtpClient.SendMailAsync(mail);
-                Console.WriteLine("Email sent successfully.");
-                await _publishEndpoint.Publish(new NotificationSent { Id = notification.Id, Status = Status.Success });
+                var notification = context.Message;
+                // Проверка при необходимости
+                // if (notification.Address == "Foo") throw new ArgumentException("Cannot send email to address Foo (without @).");
                 
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Failed to send email: {ex.Message}\n{ex.StackTrace}");
-                await _publishEndpoint.Publish(new NotificationSent { Id = notification.Id, Status = Status.Error });
+                var mail = new MailMessage
+                {
+                    From = new MailAddress(_smtpData.sender),
+                    Subject = notification.Title,
+                    Body = notification.TextContent,
+                    IsBodyHtml = false
+                };
+
+                mail.To.Add(notification.Address);
+
+                try
+                {
+                    await _smtpData.smtpClient.SendMailAsync(mail);
+                    Console.WriteLine("Email sent successfully.");
+                    SendStatusCounter.Inc();
+                    using (SendStatusDuration.NewTimer()) 
+                    {
+                        await _publishEndpoint.Publish(new NotificationSent { Id = notification.Id, Status = Status.Success });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to send email: {ex.Message}\n{ex.StackTrace}");
+                    SendStatusCounter.Inc();
+                    using (SendStatusDuration.NewTimer()) 
+                    {
+                        await _publishEndpoint.Publish(new NotificationSent { Id = notification.Id, Status = Status.Error });
+                    }
+                }
             }
         }
     }
