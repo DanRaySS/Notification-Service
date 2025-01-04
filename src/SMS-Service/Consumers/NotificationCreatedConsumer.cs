@@ -6,7 +6,7 @@ using Twilio.Rest.Api.V2010.Account;
 
 namespace SMS_Service.Consumers
 {
-    public class NotificationCreatedConsumer : IConsumer<NotificationCreated>
+    public class NotificationCreatedConsumer : IConsumer<SMSNotificationCreated>
     {
         private readonly IPublishEndpoint _publishEndpoint;
 
@@ -15,7 +15,7 @@ namespace SMS_Service.Consumers
             _publishEndpoint = publishEndpoint;
         }
 
-        public async Task Consume(ConsumeContext<NotificationCreated> context)
+        public async Task Consume(ConsumeContext<SMSNotificationCreated> context)
         {
             //debug
             Console.WriteLine("Consuming notification updated" + context.Message.Id);

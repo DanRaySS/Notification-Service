@@ -5,7 +5,7 @@ using MassTransit;
 
 namespace Email_Service.Consumers
 {
-    public class NotificationUpdatedConsumer : IConsumer<NotificationUpdated>
+    public class NotificationUpdatedConsumer : IConsumer<EmailNotificationUpdated>
     {
         private readonly SMTP_Data _smtpData;
         private readonly IPublishEndpoint _publishEndpoint;
@@ -16,7 +16,7 @@ namespace Email_Service.Consumers
             _publishEndpoint = publishEndpoint;
         }
 
-        public async Task Consume(ConsumeContext<NotificationUpdated> context)
+        public async Task Consume(ConsumeContext<EmailNotificationUpdated> context)
         {
             //debug
             Console.WriteLine("Consuming notification updated");

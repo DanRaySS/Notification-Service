@@ -3,9 +3,9 @@ using MassTransit;
 
 namespace Notification_Service.Consumers
 {
-    public class NotificationCreatedFaultConsumer : IConsumer<Fault<NotificationCreated>>
+    public class NotificationCreatedFaultConsumer : IConsumer<Fault<EmailNotificationCreated>>
     {
-        public async Task Consume(ConsumeContext<Fault<NotificationCreated>> context)
+        public async Task Consume(ConsumeContext<Fault<EmailNotificationCreated>> context)
         {
             Console.WriteLine("Consuming fault case");
             // Обработка ошибки на стороне MassTransit (при необходимости можно добавить)

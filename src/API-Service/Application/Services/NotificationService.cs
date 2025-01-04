@@ -53,10 +53,12 @@ namespace API_Service.Application.Services
                     case "Email":
                     case "email":
                         notification.ChannelType = ChannelType.Email;
+                        await _publishEndpoint.Publish(_mapper.Map<EmailNotificationCreated>(notification));
                         break;
                     case "SMS":
                     case "sms":
                         notification.ChannelType = ChannelType.SMS;
+                        await _publishEndpoint.Publish(_mapper.Map<SMSNotificationCreated>(notification));
                         break;
                     case "Telegram":
                     case "telegram":
@@ -65,13 +67,13 @@ namespace API_Service.Application.Services
                     case "All":
                     case "all":
                         notification.ChannelType = ChannelType.All;
+                        await _publishEndpoint.Publish(_mapper.Map<EmailNotificationCreated>(notification));
+                        await _publishEndpoint.Publish(_mapper.Map<SMSNotificationCreated>(notification));
                         break;
                     default:
                         return Result<NotificationDto>.Error(new ValidationError() { Data = { { nameof(notification.ChannelType), "Invalid type" } } });
                 }
             }
-
-            await _publishEndpoint.Publish(_mapper.Map<NotificationCreated>(notification));
 
             await _repository.AddAsync(notification, cancellationToken);
             await _repository.UnitOfWork.SaveChangesAsync(cancellationToken);
@@ -88,6 +90,11 @@ namespace API_Service.Application.Services
                 return Result<NotificationDto>.Error(new NotificationNotFoundError(id));
             }
 
+            notification.Address = request.Address ?? notification.Address;
+            notification.Title = request.Title ?? notification.Title;
+            notification.TextContent = request.TextContent ?? notification.TextContent;
+
+
             if (request.ChannelType != null) 
             {
                 switch (request.ChannelType)
@@ -95,10 +102,22 @@ namespace API_Service.Application.Services
                     case "Email":
                     case "email":
                         notification.ChannelType = ChannelType.Email;
+                        await _publishEndpoint.Publish(new EmailNotificationUpdated {
+                            Id = id, 
+                            Title = notification.Title, 
+                            TextContent = notification.TextContent,
+                            Address = notification.Address
+                        });
                         break;
                     case "SMS":
                     case "sms":
                         notification.ChannelType = ChannelType.SMS;
+                        await _publishEndpoint.Publish(new SMSNotificationUpdated {
+                            Id = id, 
+                            Title = notification.Title, 
+                            TextContent = notification.TextContent,
+                            Address = notification.Address
+                        });
                         break;
                     case "Telegram":
                     case "telegram":
@@ -107,20 +126,24 @@ namespace API_Service.Application.Services
                     case "All":
                     case "all":
                         notification.ChannelType = ChannelType.All;
+                        await _publishEndpoint.Publish(new EmailNotificationUpdated {
+                            Id = id, 
+                            Title = notification.Title, 
+                            TextContent = notification.TextContent,
+                            Address = notification.Address
+                        });
+                        
+                        await _publishEndpoint.Publish(new SMSNotificationUpdated {
+                            Id = id, 
+                            Title = notification.Title, 
+                            TextContent = notification.TextContent,
+                            Address = notification.Address
+                        });
                         break;
                     default:
                         return Result<NotificationDto>.Error(new ValidationError() { Data = { { nameof(request.ChannelType), "Invalid type" } } });
                 }
             }
-
-            notification.Address = request.Address ?? notification.Address;
-            notification.Title = request.Title ?? notification.Title;
-            notification.TextContent = request.TextContent ?? notification.TextContent;
-
-            var updatedNotification = _mapper.Map<NotificationUpdated>(notification);
-            updatedNotification.Id = id;
-
-            await _publishEndpoint.Publish(updatedNotification);
 
             await _repository.Update(notification, cancellationToken);
             await _repository.UnitOfWork.SaveChangesAsync(cancellationToken);

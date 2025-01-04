@@ -5,7 +5,7 @@ using Email_Service.Models;
 
 namespace Email_Service.Consumers
 {
-    public class NotificationCreatedConsumer : IConsumer<NotificationCreated>
+    public class NotificationCreatedConsumer : IConsumer<EmailNotificationCreated>
     {
         private readonly SMTP_Data _smtpData;
         private readonly IPublishEndpoint _publishEndpoint;
@@ -16,7 +16,7 @@ namespace Email_Service.Consumers
             _publishEndpoint = publishEndpoint;
         }
 
-        public async Task Consume(ConsumeContext<NotificationCreated> context)
+        public async Task Consume(ConsumeContext<EmailNotificationCreated> context)
         {
             //debug
             Console.WriteLine("Consuming notification created: " + context.Message.Id);

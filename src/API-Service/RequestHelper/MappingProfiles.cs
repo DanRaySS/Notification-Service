@@ -11,8 +11,10 @@ namespace API_Service.RequestHelper
         {
             CreateMap<Notification, NotificationDto>();
             CreateMap<CreateNotificationDto, Notification>();
-            CreateMap<Notification, NotificationCreated>();
-            CreateMap<Notification, NotificationUpdated>();
+            CreateMap<Notification, EmailNotificationCreated>();
+            CreateMap<Notification, SMSNotificationCreated>();
+            CreateMap<Notification, EmailNotificationUpdated>();
+            CreateMap<Notification, SMSNotificationUpdated>();
         }
     }
 
