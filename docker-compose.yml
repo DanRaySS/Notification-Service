@@ -6,14 +6,74 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
     ports:
-      - 5433:5433
+      - 5432:5432
     volumes:
       - pgdata:/var/lib/postgresql/data
+
   rabbitmq:
     image: rabbitmq:3-management-alpine
     container_name: rabbitmq
     ports:
       - "5672:5672"
       - "15672:15672"
+
+  api-svc:
+    image: daniilmukhortikov/api-svc:latest
+    build:
+      context: .
+      dockerfile: src/API-Service/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - RabbitMq__Host=rabbitmq
+      - ConnectionStrings__Server=Server=postgres;User Id=postgres;Password=postgres;Database=NotificationServiceDB
+    ports:
+      - 7001:80
+    depends_on:
+      - postgres
+      - rabbitmq
+
+  email-svc:
+    image: daniilmukhortikov/email-svc:latest
+    build:
+      context: .
+      dockerfile: src/Email-Service/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - RabbitMq__Host=rabbitmq
+      - ConnectionStrings__smtpServer=smtp.yandex.ru
+      - ConnectionStrings__smtpPort=587
+      - ConnectionStrings__username=DanRayZed
+      - ConnectionStrings__password=rrzwvdmsmlebtvso
+      - ConnectionStrings__sender=DanRayZed@yandex.ru
+    ports:
+      - 7002:80
+    depends_on:
+      - rabbitmq
+    command: >
+      sh -c "until nc -z rabbitmq 5672; do
+      echo 'Waiting for RabbitMQ...'; sleep 1; done;
+      dotnet EmailService.dll"
+    dns:
+      - 8.8.8.8
+
+  sms-svc:
+    image: daniilmukhortikov/sms-svc:latest
+    build:
+      context: .
+      dockerfile: src/SMS-Service/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+    ports:
+      - 7003:80
+    depends_on:
+      - rabbitmq
+
 volumes:
   pgdata:
+
+networks:
+  default:
+    external: false

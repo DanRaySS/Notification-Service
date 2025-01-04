@@ -14,13 +14,13 @@ COPY src/Contracts/Contracts.csproj src/Contracts/Contracts.csproj
 RUN dotnet restore Notification-Service.sln
 
 # Copy the app folders
-COPY src/API-Service src/API-Service
+COPY src/SMS-Service src/SMS-Service
 COPY src/Contracts src/Contracts
-WORKDIR /app/src/API-Service
+WORKDIR /app/src/SMS-Service
 RUN dotnet publish -c Release -o /app/src/out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app/src/out .
-ENTRYPOINT ["dotnet", "API-Service.dll"]
+ENTRYPOINT ["dotnet", "SMS-Service.dll"]
