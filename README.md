@@ -18,4 +18,5 @@
 <h2>Дополнительная информация:</h2>
 <ol>
   <li>channelTypes: Email, SMS, All ...</li>
+  <li>В проекте стоят дефолтные подключения к бд : Server=postgres;User Id=postgres;Password=postgres;Database=NotificationServiceDB</li>
 </ol>
