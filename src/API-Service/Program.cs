@@ -5,11 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using MassTransit;
 using API_Service.Application.Services;
 using Notification_Service.Consumers;
+using Prometheus;
 
 namespace API_Service
 {
     public class Program
     {
+
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -84,7 +86,12 @@ namespace API_Service
             }
 
             app.UseRouting();
-            app.MapControllers();
+            app.UseHttpMetrics();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapMetrics(); // /metrics endpoint для сбора метрик
+            });
 
             try
             {
