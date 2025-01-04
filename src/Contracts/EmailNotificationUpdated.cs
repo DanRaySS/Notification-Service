@@ -1,6 +1,6 @@
 namespace Contracts
 {
-    public class NotificationUpdated
+    public class EmailNotificationUpdated
     {
         public Guid Id { get; set; }
         public string Title { get; set; }

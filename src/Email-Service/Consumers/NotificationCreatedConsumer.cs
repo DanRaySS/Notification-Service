@@ -44,7 +44,7 @@ namespace Email_Service.Consumers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to send email: {ex.Message}");
+                Console.WriteLine($"Failed to send email: {ex.Message}\n{ex.StackTrace}");
                 await _publishEndpoint.Publish(new NotificationSent { Id = notification.Id, Status = Status.Error });
             }
         }

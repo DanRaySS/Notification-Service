@@ -143,6 +143,13 @@ namespace API_Service.Application.Services
                     default:
                         return Result<NotificationDto>.Error(new ValidationError() { Data = { { nameof(request.ChannelType), "Invalid type" } } });
                 }
+            } else {
+                await _publishEndpoint.Publish(new EmailNotificationUpdated {
+                    Id = id, 
+                    Title = notification.Title, 
+                    TextContent = notification.TextContent,
+                    Address = notification.Address
+                });
             }
 
             await _repository.Update(notification, cancellationToken);
