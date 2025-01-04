@@ -5,7 +5,7 @@ using Email_Service.Models;
 
 namespace Email_Service.Consumers
 {
-    public class NotificationCreatedConsumer : IConsumer<NotificationCreated>
+    public class NotificationCreatedConsumer : IConsumer<EmailNotificationCreated>
     {
         private readonly SMTP_Data _smtpData;
         private readonly IPublishEndpoint _publishEndpoint;
@@ -16,7 +16,7 @@ namespace Email_Service.Consumers
             _publishEndpoint = publishEndpoint;
         }
 
-        public async Task Consume(ConsumeContext<NotificationCreated> context)
+        public async Task Consume(ConsumeContext<EmailNotificationCreated> context)
         {
             //debug
             Console.WriteLine("Consuming notification created: " + context.Message.Id);
@@ -44,7 +44,7 @@ namespace Email_Service.Consumers
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to send email: {ex.Message}");
+                Console.WriteLine($"Failed to send email: {ex.Message}\n{ex.StackTrace}");
                 await _publishEndpoint.Publish(new NotificationSent { Id = notification.Id, Status = Status.Error });
             }
         }
