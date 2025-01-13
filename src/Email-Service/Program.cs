@@ -7,6 +7,7 @@ using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 var data = new SMTP_Data();
@@ -51,6 +52,7 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
+app.UseRouting();
 app.UseHttpMetrics();
 app.UseEndpoints(endpoints =>
 {

@@ -55,7 +55,7 @@ namespace SMS_Service.Consumers
                     ResendStatusCounter.Inc();
                     using (ResendStatusDuration.NewTimer()) 
                     {
-                        wait _publishEndpoint.Publish(new NotificationSent { Id = notification.Id, Status = Status.ResentError });
+                        await _publishEndpoint.Publish(new NotificationSent { Id = notification.Id, Status = Status.ResentError });
                     }
 
                     Console.WriteLine($"Сообщение отправлено! SID: {message.Sid}");

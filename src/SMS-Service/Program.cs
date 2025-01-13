@@ -5,6 +5,7 @@ using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -32,6 +33,7 @@ builder.Services.AddMassTransit(x =>
 
 var app = builder.Build();
 
+app.UseRouting();
 app.UseHttpMetrics();
 app.UseEndpoints(endpoints =>
 {
